@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>TOEIC4U</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500&display=swap" rel="stylesheet">
+  <style>
+    #dateContainer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 20px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.dateColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #e3f2fd, #fff);
+      margin: 0;
+      color: #333;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+      padding: 0 20px;
+    }
+    #selectorScreen {
+      width: 100%;
+      max-width: 600px;
+      margin-top: 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+      text-align: center;
+    }
+    #reviewTitle {
+      font-size: 3em;
+      font-family: 'Rubik', sans-serif;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .startLine {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+    #startBtn {
+      background: linear-gradient(135deg, #4CAF50, #2E7D32);
+      color: white;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      font-size: 1.2em;
+      font-weight: 600;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      cursor: pointer;
+      border: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    #startBtn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+    }
+    label {
+      font-size: 1.3em;
+      margin: 6px 0;
+      color: #1976D2;
+      font-weight: 500;
+    }
+    #sheetList {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
+    }
+    #reviewScreen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    #wordDisplay {
+      font-size: 6em;
+      margin: 40px 0 20px;
+      font-family: 'Rubik', sans-serif;
+      color: #2E7D32;
+    }
+    #hintDisplay {
+      font-size: 1.5em;
+      color: #1976D2;
+      margin-bottom: 30px;
+    }
+    .buttonRow {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    button {
+      font-size: 1.5em;
+      padding: 15px 35px;
+      cursor: pointer;
+      border: none;
+      border-radius: 40px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    #hintBtn {
+      background: linear-gradient(135deg, #ffa726, #fb8c00);
+      color: white;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    }
+    #nextBtn {
+      background: linear-gradient(135deg, #42a5f5, #1565c0);
+      color: white;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    }
+    #hintBtn:hover, #nextBtn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    }
+    #endList {
+      margin-top: 30px;
+      font-size: 1.2em;
+      max-width: 600px;
+      text-align: left;
+    }
+
+    /* ✅ Mobile view adjustments */
+    @media (max-width: 480px) {
+  body, #selectorScreen, #reviewScreen {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 2.5em;
+  }
+
+  #wordDisplay {
+    font-size: 3.5em; /* 🔺 Twice as big */
+  }
+
+  #hintDisplay {
+    font-size: 0.75em; /* 🔻 Half size */
+  }
+
+  button {
+    font-size: 1em; /* 🔻 2/3 of original */
+    padding: 20px 40px;
+    border-radius: 40px;
+  }
+
+  #startBtn {
+    width: 120px;
+    height: 120px;
+    font-size: 1.6em;
+  }
+
+  label {
+    font-size: 1.4em;
+  }
+
+  #endList {
+    font-size: 1em;
+  }
+}
+  </style>
+</head>
+<body>
+
+  <div id="selectorScreen">
+    <h1 id="reviewTitle">⚡ TOEIC4U</h1>
+    <div class="startLine">
+      <button id="startBtn" onclick="startReview()">Start</button>
+    </div>
+    <div id="sheetList"></div>
+  </div>
+
+  <div id="reviewScreen">
+    <h1>⚡ TOEIC4U</h1>
+    <div id="wordDisplay">...</div>
+    <div id="hintDisplay"></div>
+    <div class="buttonRow">
+      <button id="hintBtn">💡 Hint</button>
+      <button id="nextBtn">✅ Next</button>
+    </div>
+    <div id="endList"></div>
+  </div>
+
+  <script>
+    const sheetId = '1q5XyVakqGyJFuTEUv87yM85V5YRps9FHXiNmADGs7fM';
+    const apiKey = 'AIzaSyDTI3yXucHM8LHQeSXJYYJJYVzufW0R6ik';
+
+    let selectedSheets = [], allWords = [], currentIndex = 0, hintedWords = [], hintShown = false;
+
+    const selectorScreen = document.getElementById('selectorScreen');
+    const reviewScreen = document.getElementById('reviewScreen');
+    const wordDisplay = document.getElementById('wordDisplay');
+    const hintDisplay = document.getElementById('hintDisplay');
+
+    async function loadSheetNames() {
+      const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}?key=${apiKey}`);
+      const data = await res.json();
+      const sheetList = document.getElementById('sheetList');
+const dateContainer = document.createElement('div');
+dateContainer.id = 'dateContainer';
+
+const leftColumn = document.createElement('div');
+const rightColumn = document.createElement('div');
+leftColumn.className = 'dateColumn';
+rightColumn.className = 'dateColumn';
+
+data.sheets.forEach((sheet, index) => {
+  const name = sheet.properties.title;
+  const label = document.createElement('label');
+  label.innerHTML = `<input type="checkbox" value="${name}"/> ${name}`;
+
+  if (index % 2 === 0) {
+    leftColumn.appendChild(label);
+  } else {
+    rightColumn.appendChild(label);
+  }
+});
+      
+dateContainer.appendChild(leftColumn);
+dateContainer.appendChild(rightColumn);
+sheetList.appendChild(dateContainer);
+
+    }
+
+    async function startReview() {
+      const checkboxes = document.querySelectorAll('#sheetList input:checked');
+      selectedSheets = Array.from(checkboxes).map(cb => cb.value);
+      if (selectedSheets.length === 0) return alert("Please select at least one lesson.");
+      allWords = [];
+      for (const sheet of selectedSheets) {
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${sheet}?key=${apiKey}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        const words = data.values
+          .filter(row => row.length >= 3)
+          .map(row => ({
+            word: row[0],
+            hint: row[1] || '—',
+            meaning: row[2] || '—'
+          }));
+        allWords.push(...words);
+      }
+      currentIndex = 0;
+      hintedWords = [];
+      selectorScreen.style.display = 'none';
+      reviewScreen.style.display = 'flex';
+      showWord();
+    }
+
+    function showWord() {
+      hintDisplay.textContent = '';
+      hintShown = false;
+
+      if (currentIndex < allWords.length) {
+        wordDisplay.textContent = allWords[currentIndex].word;
+      } else {
+        wordDisplay.textContent = '🎉 Done!';
+        const listHTML = hintedWords.map(item =>
+          `<li><strong>${item.word}</strong><br><em>Hint:</em> ${item.hint}<br><em>Meaning:</em> ${item.meaning}</li>`
+        ).join('');
+        document.getElementById('endList').innerHTML = `
+          <h2>📚 Forgotten Words</h2>
+          <ul>${listHTML || '<li>None!</li>'}</ul>
+        `;
+      }
+    }
+
+    // ✅ Updated hint logic to prevent first-load bug
+    function showHint() {
+      if (!allWords.length || currentIndex >= allWords.length) return;
+      const currentItem = allWords[currentIndex];
+      if (!hintShown) {
+        hintDisplay.textContent = `Hint: ${currentItem.hint}`;
+        hintShown = true;
+      }
+    }
+
+    function nextWord() {
+      if (hintShown && currentIndex < allWords.length) {
+        hintedWords.push(allWords[currentIndex]);
+      }
+      currentIndex++;
+      showWord();
+    }
+    document.getElementById('hintBtn').onclick = showHint;
+    document.getElementById('nextBtn').onclick = nextWord;
+
+    // ✅ Updated keyboard logic with screen check
+    document.addEventListener('keydown', e => {
+      if (reviewScreen.style.display === 'flex') {
+        if (e.code === 'Space') showHint();
+        if (e.code === 'ArrowRight') nextWord();
+      }
+    });
+
+    window.onload = loadSheetNames;
+  </script>
+</body>
+</html>
+
