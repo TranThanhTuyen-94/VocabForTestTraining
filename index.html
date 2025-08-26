@@ -204,6 +204,12 @@
   </div>
 
   <script>
+    function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
     const sheetId = '1uBBTU3H9y8lYqm9AzdtAb1QDo9eJhcLCZ4vU7VLE8AM';
     const apiKey = 'AIzaSyDTI3yXucHM8LHQeSXJYYJJYVzufW0R6ik';
 
@@ -261,6 +267,7 @@ sheetList.appendChild(dateContainer);
             meaning: row[2] || '—'
           }));
         allWords.push(...words);
+        shuffleArray(allWords);
       }
       currentIndex = 0;
       hintedWords = [];
@@ -319,6 +326,7 @@ sheetList.appendChild(dateContainer);
   </script>
 </body>
 </html>
+
 
 
 
